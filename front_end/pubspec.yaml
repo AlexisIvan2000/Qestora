@@ -1,0 +1,32 @@
+name: front_end
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  carousel_slider: ^5.1.1
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+   - assets/images/event1.png
+   - assets/images/event2.png
+   - assets/images/event3.png
+   - assets/images/event4.png
+   - assets/images/event5.png
+   - assets/images/event6.png
+   - assets/images/google.png
+   - assets/images/profil.png
+
+    
