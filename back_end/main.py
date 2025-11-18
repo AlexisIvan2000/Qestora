@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 from auth.user_auth import auth_router
+from auth.oauth import oauth_router
 from models.database import Base, engine
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.include_router(auth_router)
+app.include_router(oauth_router)
+
 
 @app.get("/")
 async def root():
