@@ -64,8 +64,13 @@ async def forgot_password(email: str, db: Session = Depends(get_db)):
 
 
 @auth_router.get("/me")
-async def get_current_user(token: str):
+async def get_current_user(token: str, db: Session = Depends(get_db)):
     payload = verify_access_token(token)
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    return {"email": payload.get("sub")} 
+    email = payload.get("sub")
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return {"email": user.email, "full_name": user.full_name,}
+    

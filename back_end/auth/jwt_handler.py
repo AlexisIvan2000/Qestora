@@ -24,10 +24,7 @@ def verify_access_token(token: str):
 
 
 def create_reset_token(user_id: int):
-    """
-    On encode l'ID du user dans le token.
-    C’est la bonne pratique (pas l’email).
-    """
+ 
     expire = datetime.utcnow() + timedelta(minutes=15)
     payload = {
         "sub": str(user_id),    
@@ -39,9 +36,7 @@ def create_reset_token(user_id: int):
 
 
 def verify_reset_token(token: str):
-    """
-    Retourne l'ID du user si le token est valide.
-    """
+ 
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[algorithm])
         user_id = payload.get("sub")

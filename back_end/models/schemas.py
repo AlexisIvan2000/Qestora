@@ -24,3 +24,6 @@ class UserLoggedIn(BaseModel):
 class TokenData(Token):
     user: UserLoggedIn
 
+class Googlelogin(BaseModel):
+    idToken: str
+
