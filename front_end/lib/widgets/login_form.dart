@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:front_end/screen/dashboard.dart';
 import 'package:front_end/screen/register.dart';
 import 'package:front_end/services/auth_service.dart';
+import 'package:front_end/services/google_service.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -22,58 +23,59 @@ class _LoginFormState extends State<LoginForm> {
     _passwordController.dispose();
     super.dispose();
   }
-  void _showForgotPasswordDialog() {
-  final emailController = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text("Reset Password"),
-        content: TextField(
-          controller: emailController,
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
-            labelText: "Enter your email",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text("Reset Password"),
+          content: TextField(
+            controller: emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: "Enter your email",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+              ),
             ),
           ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () => Navigator.pop(context),
-          ),
-          ElevatedButton(
-            child: const Text("Send"),
-            onPressed: () async {
-              String email = emailController.text.trim();
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: const Text("Send"),
+              onPressed: () async {
+                String email = emailController.text.trim();
 
-              if (email.isEmpty || !email.contains("@")) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Enter a valid email")),
-                );
-                return;
-              }
+                if (email.isEmpty || !email.contains("@")) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Enter a valid email")),
+                  );
+                  return;
+                }
 
-              final result = await AuthService.forgotPassword(email);
+                final result = await AuthService.forgotPassword(email);
 
-              Navigator.pop(context); // Close popup
+                Navigator.pop(context); // Close popup
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(result)),
-              );
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(result)));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _login() async {
     final result = await AuthService.login(
@@ -189,10 +191,10 @@ class _LoginFormState extends State<LoginForm> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) return "Password required";
-              if (value.length < 6){
+              if (value.length < 6) {
                 return "Password must be at least 6 characters";
               }
-                
+
               return null;
             },
           ),
@@ -247,7 +249,23 @@ class _LoginFormState extends State<LoginForm> {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                final idToken = await GoogleService().signIn();
+                if (idToken == null) return;
+
+                final result = await AuthService.loginWithGoogle(idToken);
+
+                if (result != null) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Erreur de connexion Google")),
+                  );
+                }
+              },
+
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(

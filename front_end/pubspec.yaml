@@ -10,9 +10,13 @@ dependencies:
   carousel_slider: ^5.1.1
   flutter:
     sdk: flutter
+  flutter_dotenv: ^6.0.0
   flutter_secure_storage: ^9.2.4
   google_fonts: ^6.3.2
+  google_sign_in: 6.2.1
   http: ^1.6.0
+  shared_preferences: ^2.5.3
+
 
 dev_dependencies:
   flutter_test:
@@ -30,5 +34,6 @@ flutter:
    - assets/images/event6.png
    - assets/images/google.png
    - assets/images/profil.png
+   - .env
 
     

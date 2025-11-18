@@ -16,9 +16,10 @@ class _NavigateBarState extends State<NavigateBar> {
     setState(() {
       _selectedIndex = index;
       if (_selectedIndex == 0) {
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const DashboardScreen()));
+       Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+        (Route<dynamic> route) => false,
+      );
       }
       else if (_selectedIndex == 1) {
         // Navigate to Calendar Screen
@@ -27,7 +28,8 @@ class _NavigateBarState extends State<NavigateBar> {
       } else if (_selectedIndex == 3) {
         Navigator.of(
           context,
-        ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+        ).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const SettingsScreen())
+        , (Route<dynamic> route) => false);
       }
     });
   }
