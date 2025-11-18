@@ -55,28 +55,13 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
 async def forgot_password(email: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Email not found")
-    
-    reset_token = create_reset_token(email)
-    password_reset_email(email, reset_token)
+        raise HTTPException(status_code=404, detail="Email not found")
+
+    reset_token = create_reset_token(user.id)  
+    password_reset_email(user.email, reset_token)
     return {"msg": "Password reset email sent"}
 
-@auth_router.post("/reset-password")
-async def reset_password(token: str, new_password: str, db: Session = Depends(get_db)):
 
-    email = verify_reset_token(token)
-    if not email:
-        raise HTTPException(400, "Invalid or expired token")
-
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(404, "User not found")
-
-    hashed_password = hash_password(new_password)
-    user.password = hashed_password
-    db.commit()
-
-    return {"message": "Password successfully reset"}
 
 @auth_router.get("/me")
 async def get_current_user(token: str):

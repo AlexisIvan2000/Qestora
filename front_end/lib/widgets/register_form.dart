@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:front_end/models/register_request.dart';
+import 'package:front_end/services/auth_service.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -16,7 +18,26 @@ class _RegisterFormState extends State<RegisterForm> {
 
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
-
+  void _register() async{
+    final request = RegisterRequest(
+      fullName: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    final result = await AuthService.register(request);
+    if (result != null && !result.startsWith("Error")) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result ?? 'Registration failed')),
+      );
+    }
+   
+    
+  }
   @override
   void dispose() {
     _nameController.dispose();
@@ -123,7 +144,7 @@ class _RegisterFormState extends State<RegisterForm> {
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  // Register logic
+                  _register();
                 }
               },
               style: ElevatedButton.styleFrom(

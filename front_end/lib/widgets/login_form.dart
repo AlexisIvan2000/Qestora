@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/screen/dashboard.dart';
 import 'package:front_end/screen/register.dart';
+import 'package:front_end/services/auth_service.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -20,6 +21,75 @@ class _LoginFormState extends State<LoginForm> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+  void _showForgotPasswordDialog() {
+  final emailController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text("Reset Password"),
+        content: TextField(
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: "Enter your email",
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            child: const Text("Send"),
+            onPressed: () async {
+              String email = emailController.text.trim();
+
+              if (email.isEmpty || !email.contains("@")) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Enter a valid email")),
+                );
+                return;
+              }
+
+              final result = await AuthService.forgotPassword(email);
+
+              Navigator.pop(context); // Close popup
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(result)),
+              );
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  void _login() async {
+    final result = await AuthService.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+    if (result['success']) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Login failed')),
+      );
+    }
   }
 
   @override
@@ -119,7 +189,10 @@ class _LoginFormState extends State<LoginForm> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) return "Password required";
-              if (value.length < 6) return "Password must be at least 6 characters";
+              if (value.length < 6){
+                return "Password must be at least 6 characters";
+              }
+                
               return null;
             },
           ),
@@ -129,7 +202,9 @@ class _LoginFormState extends State<LoginForm> {
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                _showForgotPasswordDialog();
+              },
               child: Text(
                 "Forgot password?",
                 style: TextStyle(
@@ -146,14 +221,9 @@ class _LoginFormState extends State<LoginForm> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const DashboardScreen(),
-                  ),
-                );
-                // if (_formKey.currentState!.validate()) {
-                //   // login logic
-                // }
+                if (_formKey.currentState!.validate()) {
+                  _login();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,

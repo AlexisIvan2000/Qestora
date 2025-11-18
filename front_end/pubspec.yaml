@@ -10,7 +10,9 @@ dependencies:
   carousel_slider: ^5.1.1
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^9.2.4
   google_fonts: ^6.3.2
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

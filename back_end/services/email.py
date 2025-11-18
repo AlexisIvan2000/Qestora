@@ -28,7 +28,7 @@ def welcome_email(to: str, name: str):
     return send_email(to, subject, html)
 
 def password_reset_email(to: str, token: str):
-    reset_link=f"https://localhost:8000/reset-password?token={token}"
+    reset_link = f"http://localhost:8000/auth/reset-password?token={token}"
     subject = "Qestora Password Reset"
     html = f"""
        <h2>Password Reset Request</h2>

@@ -13,22 +13,43 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=algorithm)
     return encoded_jwt
 
+
 def verify_access_token(token: str):
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[algorithm])
         return payload
     except JWTError:
         return None
-    
-def create_reset_token(email:str):
+
+
+
+def create_reset_token(user_id: int):
+    """
+    On encode l'ID du user dans le token.
+    C’est la bonne pratique (pas l’email).
+    """
     expire = datetime.utcnow() + timedelta(minutes=15)
-    payload = {"sub": email, "exp": expire}
+    payload = {
+        "sub": str(user_id),    
+        "exp": expire,
+        "iat": datetime.utcnow()
+    }
     reset_token = jwt.encode(payload, JWT_SECRET_KEY, algorithm=algorithm)
     return reset_token
 
+
 def verify_reset_token(token: str):
-    try: 
+    """
+    Retourne l'ID du user si le token est valide.
+    """
+    try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[algorithm])
-        return payload.get("sub")
+        user_id = payload.get("sub")
+
+        if user_id is None:
+            return None
+        
+        return int(user_id)
+
     except JWTError:
         return None
