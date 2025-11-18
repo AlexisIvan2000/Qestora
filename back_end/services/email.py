@@ -10,7 +10,7 @@ def send_email(to: str, subject: str, html: str ):
         data={
             "from":f"Qestora <{MAILGUN_FROM}>",
             "to": to,
-            subject: subject,
+            "subject": subject,
             "html": html
         }
     )
@@ -39,3 +39,4 @@ def password_reset_email(to: str, token: str):
        <p>Best regards,<br/>The Qestora Team</p>"""
     
     return send_email(to, subject, html)
+
