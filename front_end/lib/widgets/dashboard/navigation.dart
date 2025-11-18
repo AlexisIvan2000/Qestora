@@ -36,6 +36,7 @@ class _NavigateBarState extends State<NavigateBar> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       fixedColor: Theme.of(context).colorScheme.primary,
+      type: BottomNavigationBarType.fixed,
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
       items: const [
